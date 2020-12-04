@@ -1,0 +1,49 @@
+This implementation is for redhat operating system version 7 (RHELv7)
+*Network File Sharing is the utility which allows you to share file over the network(connected). This is also known as simple NFS as it does not require any authentication.
+*It is not cross platform sharing tool it will require two common os based systems.
+
+Every service implementation has some basic steps like 
+1) Installation
+2) Service Activation
+3) Sharing/Implementation
+4) Service Restart
+5) Firewall Entry
+
+This above steps are quite similer in every utility implementaion in linux
+
+For NFS we require two systems -> sys1, sys2 (you can add two virtual machines)
+sys1- IP(172.168.1.1)
+sys2- IP(172.168.1.2)   this ip will vary according to your network.
+
+system-1
+
+yum install nfs   -> yum is the package download utility in RHEL it requires repositary path set in repo.repo file.
+systemctl start nfs   -> This command starts,enable,restart and stop the mentioned service.
+systemctl enable nfs    -> This allows service to be in start phase after reboot also.
+mkdir /nfsshare   -> mkdir will create directory
+vim /etc/export   -> vim is a latest editor you can also use vi
+*content in export file*
+{/nfsshare    (#destinationip)172.168.1.2(ro,sync)}
+exportfs -r
+firewall-cmd --permenant --add-service=nfs    -> This is must if you forgot to mention nfs in firewall then you wont be able to mount dir. on sys2
+firewall-cmd --reload
+systemctl restart nfs
+showmount -e
+
+(Note:- If you dont know what's the full name of service or command then put first 1-2 letters of that command and then press TAB)
+
+DONE WITH SYSTEM-1
+
+system-2
+
+yum install nfs
+systemctl start nfs
+systemctl enable nfs
+mkdir /mount
+vim /etc/fstab    -> Here permenant mount entries are mention. Due to this, after reboot also your directory will remain mounted.
+*content*
+{system1.domain:/nfsshare   /mount    nfs   defaults    0   0 }
+mount -av     -> This will show is your mounting is successfull or not
+df -hT    -> Shows info about where you had mounted the shared directory
+
+DONE WITH NFS SIMPLE NFS
