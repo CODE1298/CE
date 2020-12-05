@@ -1,0 +1,40 @@
+Firewall is a protection layer for system it blocks unwanted and suspicious connection requests.
+
+In this first part we will see how to restrict ssh access for particular user.
+
+SSH-Secure Shell it will provide you shell access of the target system. It runs on port-22.
+If someone forget about this port then that particular system will be compromised and eventually whole network.
+
+Consider we have system1 and system2, now sys1 wants to work on sys2 without switching the systems then in that case system2 person
+will grant access to system1 to take ssh.
+
+System2:(172.168.1.2)
+
+firewall-cmd --list-all
+systemctl start sshd.service
+systemctl restart sshd.service
+systemctl enable sshd.service
+systemctl status sshd.service
+
+firewall-cmd --permanent  --add-service=ssh
+firewall-cmd --reload
+
+System1:(172.168.1.1)
+
+ssh -X root@172.168.1.2
+{after hitting enter it will ask you for password then put it accordingly}
+
+This is how we could get access of another systems
+
+NOW we will restrict system1
+
+System2:
+
+*For restricting systems
+man firewalld.richlanguage
+{/examples --> rich rules copy that rule}
+firewall-cmd --permanent --add-rich-rule  "rule family=ipv4 source address=172.168.1.1 service name="ssh" reject"
+firewall-cmd --reload
+
+NOW try to access this system from system1.
+So this is how we can restrict systems for getting access.
